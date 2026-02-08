@@ -11,6 +11,7 @@ const MODELS = [
   "ZhipuAI/GLM-4.7-Flash",
   "moonshotai/Kimi-K2-Thinking",
   "Qwen/Qwen-7B-Chat",
+  "Qwen/Qwen3-32B",
 ];
 
 /**
@@ -26,6 +27,26 @@ async function invokeLLMWithFallback(params: any) {
         ...params,
         model,
       });
+      
+      // Check if response is valid
+      if (!response || !response.choices || !response.choices[0]) {
+        throw new Error("Invalid response format from model");
+      }
+      
+      // Check if response contains error message
+      const content = response.choices[0]?.message?.content;
+      if (!content) {
+        throw new Error("Empty response content from model");
+      }
+      
+      // Validate JSON response
+      try {
+        const contentStr = typeof content === 'string' ? content : JSON.stringify(content);
+        JSON.parse(contentStr);
+      } catch (parseError) {
+        throw new Error(`Invalid JSON response from model: ${parseError}`);
+      }
+      
       console.log(`[Naming] Model ${model} succeeded`);
       return response;
     } catch (error) {
