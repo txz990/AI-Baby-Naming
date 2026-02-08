@@ -10,6 +10,7 @@ import { toast } from "sonner";
 import { trpc } from "@/lib/trpc";
 import { Copy, Heart, Loader2, Sparkles } from "lucide-react";
 import { Link } from "wouter";
+import GenerationModal from "@/components/GenerationModal";
 
 interface GeneratedName {
   id: string;
@@ -69,6 +70,7 @@ export default function NamingGenerator() {
   const [generatedNames, setGeneratedNames] = useState<GeneratedName[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [loadingMessage, setLoadingMessage] = useState("");
+  const [showGenerationModal, setShowGenerationModal] = useState(false);
 
   const generateNamesMutation = trpc.naming.generateNames.useMutation();
 
@@ -93,6 +95,8 @@ export default function NamingGenerator() {
       return;
     }
 
+    setShowGenerationModal(true);
+    setGeneratedNames([]);
     setIsLoading(true);
     setLoadingMessage("正在分析...");
 
@@ -122,16 +126,18 @@ export default function NamingGenerator() {
 
       if (result.code === 0 && result.data?.names) {
         setGeneratedNames(result.data.names);
+        setIsLoading(false);
         toast.success(`成功生成 ${result.data.names.length} 个名字！`);
       } else {
+        setIsLoading(false);
         toast.error(result.message || "生成失败，请重试");
       }
     } catch (error) {
+      setIsLoading(false);
       toast.error("生成名字时出错，请检查网络连接");
       console.error(error);
     } finally {
       clearInterval(messageInterval);
-      setIsLoading(false);
       setLoadingMessage("");
     }
   };
@@ -143,6 +149,10 @@ export default function NamingGenerator() {
 
   const handleViewDetail = (name: GeneratedName) => {
     localStorage.setItem("selectedName", JSON.stringify(name));
+  };
+
+  const handleCloseModal = () => {
+    setShowGenerationModal(false);
   };
 
   const handleResetForm = () => {
@@ -173,7 +183,16 @@ export default function NamingGenerator() {
   };
 
   return (
-    <div className="min-h-screen bg-background py-6 md:py-12">
+    <>
+      <GenerationModal
+        isOpen={showGenerationModal}
+        isLoading={isLoading}
+        loadingMessage={loadingMessage}
+        generatedNames={generatedNames}
+        onClose={handleCloseModal}
+        onViewDetail={handleViewDetail}
+      />
+      <div className="min-h-screen bg-background py-6 md:py-12">
       <div className="container">
         {/* Header */}
         <div className="mb-8 md:mb-12">
@@ -628,6 +647,7 @@ export default function NamingGenerator() {
           </div>
         </div>
       </div>
-    </div>
+      </div>
+    </>
   );
 }

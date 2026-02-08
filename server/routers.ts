@@ -4,6 +4,40 @@ import { systemRouter } from "./_core/systemRouter";
 import { publicProcedure, router, protectedProcedure } from "./_core/trpc";
 import { z } from "zod";
 import { invokeLLM } from "./_core/llm";
+
+// Supported models for fallback
+const MODELS = [
+  "deepseek-ai/DeepSeek-V3.2",
+  "ZhipuAI/GLM-4.7-Flash",
+  "moonshotai/Kimi-K2-Thinking",
+  "Qwen/Qwen-7B-Chat",
+];
+
+/**
+ * Try to invoke LLM with model fallback
+ */
+async function invokeLLMWithFallback(params: any) {
+  let lastError: any = null;
+  
+  for (const model of MODELS) {
+    try {
+      console.log(`[Naming] Trying model: ${model}`);
+      const response = await invokeLLM({
+        ...params,
+        model,
+      });
+      console.log(`[Naming] Model ${model} succeeded`);
+      return response;
+    } catch (error) {
+      console.warn(`[Naming] Model ${model} failed:`, error);
+      lastError = error;
+      // Continue to next model
+    }
+  }
+  
+  // All models failed
+  throw new Error(`All models failed. Last error: ${lastError?.message || lastError}`);
+}
 import { saveNames, getNamesByUserId, getGenerationHistory, saveGenerationHistory, updateNameCollection, deleteName, getCollectedNames } from "./db";
 import { nanoid } from "nanoid";
 
@@ -147,8 +181,8 @@ export const appRouter = router({
           // Build prompt
           const prompt = buildNameGenerationPrompt(input, input.history);
 
-          // Call LLM
-          const response = await invokeLLM({
+          // Call LLM with fallback
+          const response = await invokeLLMWithFallback({
             messages: [
               {
                 role: "system",
