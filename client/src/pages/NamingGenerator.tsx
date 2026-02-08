@@ -556,74 +556,7 @@ export default function NamingGenerator() {
             </div>
           </div>
 
-          {/* Results Section */}
-          <div className="lg:col-span-2">
-            {generatedNames.length === 0 ? (
-              <div className="bg-card rounded-xl border border-border p-12 text-center h-full flex items-center justify-center">
-                <p className="text-muted-foreground text-lg">填写表单后，点击"生成名字"查看结果</p>
-              </div>
-            ) : (
-              <div className="space-y-6">
-                <div>
-                  <h3 className="text-2xl font-bold text-foreground mb-2">生成结果</h3>
-                  <p className="text-sm text-muted-foreground">共生成 {generatedNames.length} 个名字</p>
-                </div>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {generatedNames.map((name) => (
-                    <div key={name.id} className="bg-card rounded-xl border border-border p-4 md:p-6 hover:border-primary/50 transition-all cursor-pointer group">
-                      <Link href="/name-detail" onClick={() => handleViewDetail(name)}>
-                        <div className="flex items-start justify-between mb-4">
-                          <div className="flex-1">
-                            <h4 className="text-2xl md:text-3xl font-bold text-primary mb-1 group-hover:text-primary/80 transition-colors">
-                              {name.fullName}
-                            </h4>
-                            <p className="text-xs md:text-sm text-muted-foreground">{name.pinyin}</p>
-                          </div>
-                          <div className="text-2xl md:text-3xl font-bold text-secondary ml-2">{name.score}</div>
-                        </div>
 
-                        <div className="flex flex-wrap gap-2 mb-4">
-                          <span className="inline-block px-2 md:px-3 py-1 bg-primary/10 text-primary text-xs font-medium rounded-full">
-                            {name.gender === "male" ? "男" : name.gender === "female" ? "女" : "中性"}
-                          </span>
-                          <span className="inline-block px-2 md:px-3 py-1 bg-secondary/10 text-secondary text-xs font-medium rounded-full">
-                            {name.fiveElements}
-                          </span>
-                        </div>
-
-                        {name.meaning && (
-                          <div className="mb-4">
-                            <p className="text-xs font-semibold text-foreground mb-1">寓意</p>
-                            <p className="text-xs md:text-sm text-muted-foreground line-clamp-2">{name.meaning}</p>
-                          </div>
-                        )}
-                      </Link>
-
-                      <div className="flex gap-2">
-                        <Button
-                          size="sm"
-                          onClick={() => handleCopyName(name.fullName)}
-                          className="flex-1 rounded-lg text-xs md:text-sm"
-                          variant="outline"
-                        >
-                          <Copy className="w-3 h-3 md:w-4 md:h-4 mr-1" />
-                          复制
-                        </Button>
-                        <Button
-                          size="sm"
-                          className="flex-1 rounded-lg text-xs md:text-sm"
-                          variant="outline"
-                        >
-                          <Heart className="w-3 h-3 md:w-4 md:h-4 mr-1" />
-                          收藏
-                        </Button>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-          </div>
         </div>
       </div>
       </div>

@@ -4,6 +4,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Copy, Heart, Loader2, X, ChevronRight } from "lucide-react";
 import { toast } from "sonner";
 import { Link, useLocation } from "wouter";
+import { trpc } from "@/lib/trpc";
 
 interface GeneratedName {
   id: string;
@@ -21,6 +22,7 @@ interface GenerationState {
   isLoading: boolean;
   names: GeneratedName[];
   currentStep: number;
+  error?: string;
 }
 
 const GENERATION_STEPS = [
@@ -41,41 +43,55 @@ export default function GenerationResult() {
   });
   const [displayedNames, setDisplayedNames] = useState<GeneratedName[]>([]);
 
-  // 模拟生成过程
-  useEffect(() => {
-    if (!state.isLoading) return;
-
-    const stepInterval = setInterval(() => {
+  // 调用生成名字 API
+  const generateNamesMutation = trpc.naming.generateNames.useMutation({
+    onSuccess: (data: any) => {
       setState(prev => ({
         ...prev,
-        currentStep: (prev.currentStep + 1) % GENERATION_STEPS.length,
+        isLoading: false,
+        names: (data?.data?.names) || (data?.names) || [],
       }));
-    }, 1500);
+    },
+    onError: (error) => {
+      setState(prev => ({
+        ...prev,
+        isLoading: false,
+        error: error.message || "生成失败，请重试",
+      }));
+      toast.error("生成失败，请重试");
+    },
+  });
 
-    // 模拟生成完成（实际应从 localStorage 或 props 获取）
-    const completeTimer = setTimeout(() => {
-      const savedNames = localStorage.getItem("generatedNames");
-      if (savedNames) {
-        try {
-          const names = JSON.parse(savedNames);
-          setState(prev => ({
-            ...prev,
-            isLoading: false,
-            names,
-          }));
-        } catch (error) {
-          console.error("Failed to parse names:", error);
-          setState(prev => ({ ...prev, isLoading: false }));
-        }
-      } else {
-        setState(prev => ({ ...prev, isLoading: false }));
-      }
-    }, 9000);
+  // 初始化生成过程
+  useEffect(() => {
+    const formData = localStorage.getItem("generationFormData");
+    if (!formData) {
+      setLocation("/naming");
+      return;
+    }
 
-    return () => {
-      clearInterval(stepInterval);
-      clearTimeout(completeTimer);
-    };
+    try {
+      const data = JSON.parse(formData);
+      // 调用 API 生成名字
+      generateNamesMutation.mutate(data);
+    } catch (error) {
+      console.error("Failed to parse form data:", error);
+      setLocation("/naming");
+    }
+  }, []);
+
+  // 更新进度步骤
+  useEffect(() => {
+    if (state.isLoading) {
+      const stepInterval = setInterval(() => {
+        setState(prev => ({
+          ...prev,
+          currentStep: (prev.currentStep + 1) % GENERATION_STEPS.length,
+        }));
+      }, 1500);
+
+      return () => clearInterval(stepInterval);
+    }
   }, [state.isLoading]);
 
   // 动画显示名字
@@ -163,6 +179,14 @@ export default function GenerationResult() {
                 </p>
               </div>
             </div>
+          </div>
+        ) : state.error ? (
+          // Error state
+          <div className="flex flex-col items-center justify-center min-h-[400px]">
+            <p className="text-red-500 mb-4">{state.error}</p>
+            <Link href="/naming">
+              <Button>返回重新生成</Button>
+            </Link>
           </div>
         ) : displayedNames.length === 0 ? (
           // Empty state
