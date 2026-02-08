@@ -9,7 +9,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { toast } from "sonner";
 import { trpc } from "@/lib/trpc";
 import { Copy, Heart, Loader2, Sparkles } from "lucide-react";
-import { Link } from "wouter";
+import { Link, useLocation } from "wouter";
 import GenerationModal from "@/components/GenerationModal";
 
 interface GeneratedName {
@@ -43,6 +43,7 @@ const RADICAL_SYMBOLS: Record<string, string> = {
 const SEPARATOR_REGEX = /[\s，。、；：！？\n\r,.\-_]/g;
 
 export default function NamingGenerator() {
+  const [, setLocation] = useLocation();
   const [formData, setFormData] = useState({
     fatherName: "",
     motherName: "",
@@ -95,10 +96,8 @@ export default function NamingGenerator() {
       return;
     }
 
-    setShowGenerationModal(true);
-    setGeneratedNames([]);
-    setIsLoading(true);
-    setLoadingMessage("正在分析...");
+    localStorage.setItem("generationFormData", JSON.stringify(formData));
+    setLocation("/generation-result");
 
     const messages = [
       "正在分析八字...",
@@ -155,31 +154,11 @@ export default function NamingGenerator() {
     setShowGenerationModal(false);
   };
 
-  const handleResetForm = () => {
-    setFormData({
-      fatherName: "",
-      motherName: "",
+  const handleResetSurname = () => {
+    setFormData(prev => ({
+      ...prev,
       surname: "",
-      follow: "father" as "father" | "mother",
-      birthday: "",
-      birthTime: "",
-      gender: "unknown" as "male" | "female" | "unknown",
-      preference: "",
-      meaning: "",
-      style: "",
-      fiveElements: "",
-      custom: "",
-      avoidChars: "",
-      soundPreference: "",
-      zodiac: "",
-      cultureSource: "",
-      radical: "",
-      constellation: "",
-      international: false,
-      nameLength: 2,
-      count: 10,
-    });
-    setGeneratedNames([]);
+    }));
   };
 
   return (
@@ -568,11 +547,11 @@ export default function NamingGenerator() {
                 )}
               </Button>
               <Button
-                onClick={handleResetForm}
+                onClick={handleResetSurname}
                 variant="outline"
                 className="w-full py-6 text-base font-semibold rounded-lg"
               >
-                重置表单
+                重置姓名
               </Button>
             </div>
           </div>

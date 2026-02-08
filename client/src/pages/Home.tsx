@@ -70,11 +70,11 @@ export default function Home() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             {/* Feature 1 */}
             <Card className="border-border hover:border-primary/50 transition-colors">
-              <CardHeader>
-                <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center mb-4">
+              <CardHeader className="text-center">
+                <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center mb-4 mx-auto">
                   <BookOpen className="w-6 h-6 text-primary" />
                 </div>
-                <CardTitle className="text-lg">文化底蕴</CardTitle>
+                <CardTitle className="text-lg text-center">文化底蕴</CardTitle>
               </CardHeader>
               <CardContent>
                 <p className="text-sm text-muted-foreground">
@@ -85,11 +85,11 @@ export default function Home() {
 
             {/* Feature 2 */}
             <Card className="border-border hover:border-primary/50 transition-colors">
-              <CardHeader>
-                <div className="w-12 h-12 rounded-lg bg-secondary/10 flex items-center justify-center mb-4">
+              <CardHeader className="text-center">
+                <div className="w-12 h-12 rounded-lg bg-secondary/10 flex items-center justify-center mb-4 mx-auto">
                   <Zap className="w-6 h-6 text-secondary" />
                 </div>
-                <CardTitle className="text-lg">五行八字</CardTitle>
+                <CardTitle className="text-lg text-center">五行八字</CardTitle>
               </CardHeader>
               <CardContent>
                 <p className="text-sm text-muted-foreground">
@@ -100,11 +100,11 @@ export default function Home() {
 
             {/* Feature 3 */}
             <Card className="border-border hover:border-primary/50 transition-colors">
-              <CardHeader>
-                <div className="w-12 h-12 rounded-lg bg-accent/10 flex items-center justify-center mb-4">
+              <CardHeader className="text-center">
+                <div className="w-12 h-12 rounded-lg bg-accent/10 flex items-center justify-center mb-4 mx-auto">
                   <Heart className="w-6 h-6 text-accent" />
                 </div>
-                <CardTitle className="text-lg">音律美感</CardTitle>
+                <CardTitle className="text-lg text-center">音律美感</CardTitle>
               </CardHeader>
               <CardContent>
                 <p className="text-sm text-muted-foreground">
@@ -115,11 +115,11 @@ export default function Home() {
 
             {/* Feature 4 */}
             <Card className="border-border hover:border-primary/50 transition-colors">
-              <CardHeader>
-                <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center mb-4">
+              <CardHeader className="text-center">
+                <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center mb-4 mx-auto">
                   <Sparkles className="w-6 h-6 text-primary" />
                 </div>
-                <CardTitle className="text-lg">AI 智能推荐</CardTitle>
+                <CardTitle className="text-lg text-center">AI 智能推荐</CardTitle>
               </CardHeader>
               <CardContent>
                 <p className="text-sm text-muted-foreground">
