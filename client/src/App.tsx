@@ -6,6 +6,7 @@ import ErrorBoundary from "./components/ErrorBoundary";
 import { ThemeProvider } from "./contexts/ThemeContext";
 import Home from "./pages/Home";
 import NamingGenerator from "./pages/NamingGenerator";
+import NameDetail from "./pages/NameDetail";
 
 function Router() {
   // make sure to consider if you need authentication for certain routes
@@ -13,6 +14,7 @@ function Router() {
     <Switch>
       <Route path="/" component={Home} />
       <Route path="/naming" component={NamingGenerator} />
+      <Route path="/name-detail" component={NameDetail} />
       <Route path="/history" component={NotFound} />
       <Route path="/404" component={NotFound} />
       {/* Final fallback route */}
