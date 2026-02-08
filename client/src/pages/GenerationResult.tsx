@@ -80,17 +80,35 @@ export default function GenerationResult() {
     }
   }, []);
 
-  // 更新进度步骤
+  // 更新进度步骤，步步推进，在最后一步停下来
   useEffect(() => {
-    if (state.isLoading) {
-      const stepInterval = setInterval(() => {
+    if (state.isLoading && state.currentStep < GENERATION_STEPS.length - 1) {
+      const stepTimer = setTimeout(() => {
         setState(prev => ({
           ...prev,
-          currentStep: (prev.currentStep + 1) % GENERATION_STEPS.length,
+          currentStep: prev.currentStep + 1,
         }));
       }, 1500);
 
-      return () => clearInterval(stepInterval);
+      return () => clearTimeout(stepTimer);
+    }
+  }, [state.isLoading, state.currentStep]);
+
+  // 设置 1 分钟超时
+  useEffect(() => {
+    if (state.isLoading) {
+      const timeoutTimer = setTimeout(() => {
+        if (state.isLoading) {
+          setState(prev => ({
+            ...prev,
+            isLoading: false,
+            error: "生成超时，请重试",
+          }));
+          toast.error("生成超时，请重试");
+        }
+      }, 60000);
+
+      return () => clearTimeout(timeoutTimer);
     }
   }, [state.isLoading]);
 
